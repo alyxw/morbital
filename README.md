@@ -25,3 +25,37 @@ E:  Ad=81(I) Atr=02(Bulk) MxPS=  64 Ivl=0ms
 
 The panel presents itself as a simple serial device using the ftdi_sio driver, and has a default baud of 19200.
 
+
+## Getting Started
+
+
+Below is a basic script that utilizes the morbital.py library to print "Hello World" and listen to button presses.
+
+```
+import morbital
+import asyncio
+
+async def main():
+    panel = MatrixOrbitalPanel("/dev/ttyUSB0")
+    await panel.connect()
+    
+    panel.clear_display()
+    panel.reset_cursor()
+
+    panel.write_text("Hello World!")
+    
+    def on_button_press(char):
+        print(f"Button pressed: {char}")
+    
+    panel.add_button_callback(on_button_press)
+    
+    try:
+        await panel.listen_for_buttons()
+    except KeyboardInterrupt:
+        print("Stopping...")
+    finally:
+        panel.close()
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
